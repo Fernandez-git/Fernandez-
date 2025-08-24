@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Professional Expense Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2d3748;
+      margin-bottom: 30px;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .input-section {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #4a5568;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .add-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .clear-btn {
+      background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+      color: white;
+      margin-top: 15px;
+    }
+
+    .clear-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(245, 101, 101, 0.3);
+    }
+
+    .stats-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3);
+    }
+
+    .stat-card h3 {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .expense-list {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .expense-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .expense-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .expense-list::-webkit-scrollbar-thumb {
+      background: #667eea;
+      border-radius: 10px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: white;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+
+    li:hover {
+      transform: translateX(5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .expense-info {
+      flex-grow: 1;
+    }
+
+    .expense-name {
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 4px;
+    }
+
+    .expense-meta {
+      font-size: 12px;
+      color: #718096;
+    }
+
+    .expense-amount {
+      font-weight: bold;
+      color: #667eea;
+      margin-right: 15px;
+      font-size: 18px;
+    }
+
+    .delete-btn {
+      background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .delete-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(245, 101, 101, 0.3);
+    }
+
+    .category-colors {
+      food: #ff6b6b;
+      transport: #4ecdc4;
+      entertainment: #45b7d1;
+      shopping: #f9ca24;
+      bills: #6c5ce7;
+      health: #a29bfe;
+      other: #fd79a8;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #718096;
+    }
+
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .expense-item {
+      animation: slideIn 0.3s ease;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px;
+      }
+      
+      .stats-section {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>💰 Expense Tracker</h2>
+    
+    <div class="input-section">
+      <div class="input-group">
+        <label for="nameInput">Expense Name</label>
+        <input type="text" id="nameInput" placeholder="e.g., Coffee, Lunch, Gas">
+      </div>
+      
+      <div class="input-group">
+        <label for="amountInput">Amount (₹)</label>
+        <input type="number" id="amountInput" placeholder="0.00" step="0.01">
+      </div>
+      
+      <div class="input-group">
+        <label for="categorySelect">Category</label>
+        <select id="categorySelect">
+          <option value="food">🍽️ Food & Dining</option>
+          <option value="transport">🚗 Transportation</option>
+          <option value="entertainment">🎬 Entertainment</option>
+          <option value="shopping">🛍️ Shopping</option>
+          <option value="bills">📄 Bills & Utilities</option>
+          <option value="health">⚕️ Healthcare</option>
+          <option value="other">📦 Other</option>
+        </select>
+      </div>
+      
+      <button class="add-btn" onclick="addExpense()">Add Expense</button>
+    </div>
+
+    <div class="stats-section">
+      <div class="stat-card">
+        <h3>Total Expenses</h3>
+        <div class="value" id="totalAmount">₹0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Items</h3>
+        <div class="value" id="totalItems">0</div>
+      </div>
+    </div>
+
+    <div class="expense-list">
+      <ul id="expenseList"></ul>
+      <div id="emptyState" class="empty-state">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
+        </svg>
+        <p>No expenses yet. Add your first expense above!</p>
+      </div>
+    </div>
+
+    <button class="clear-btn" id="clearBtn" style="display: none;">Clear All Expenses</button>
+  </div>
+
+  <script>
+    let expenses = [];
+    let total = 0;
+
+    const categoryColors = {
+      food: '#ff6b6b',
+      transport: '#4ecdc4',
+      entertainment: '#45b7d1',
+      shopping: '#f9ca24',
+      bills: '#6c5ce7',
+      health: '#a29bfe',
+      other: '#fd79a8'
+    };
+
+    const categoryEmojis = {
+      food: '🍽️',
+      transport: '🚗',
+      entertainment: '🎬',
+      shopping: '🛍️',
+      bills: '📄',
+      health: '⚕️',
+      other: '📦'
+    };
+
+    function addExpense() {
+      const name = document.getElementById("nameInput").value.trim();
+      const amount = parseFloat(document.getElementById("amountInput").value);
+      const category = document.getElementById("categorySelect").value;
+
+      if (!name || isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid name and positive amount");
+        return;
+      }
+
+      const expense = {
+        id: Date.now(),
+        name: name,
+        amount: amount,
+        category: category,
+        date: new Date().toLocaleDateString('en-IN', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      };
+
+      expenses.push(expense);
+      total += amount;
+      
+      renderExpenses();
+      updateStats();
+      clearInputs();
+    }
+
+    function deleteExpense(id) {
+      const expenseIndex = expenses.findIndex(exp => exp.id === id);
+      if (expenseIndex > -1) {
+        total -= expenses[expenseIndex].amount;
+        expenses.splice(expenseIndex, 1);
+        renderExpenses();
+        updateStats();
+      }
+    }
+
+    function clearAllExpenses() {
+      console.log("Clear button clicked!"); // Debug log
+      console.log("Current expenses count:", expenses.length); // Debug log
+      
+      if (expenses.length === 0) {
+        alert("No expenses to clear!");
+        return;
+      }
+      
+      const userConfirmed = confirm(`Are you sure you want to clear all ${expenses.length} expenses?\n\nTotal amount: ₹${total.toFixed(2)}\n\nThis action cannot be undone!`);
+      
+      if (userConfirmed) {
+        expenses = [];
+        total = 0;
+        renderExpenses();
+        updateStats();
+        alert("All expenses have been cleared successfully!");
+      }
+    }
+
+    function renderExpenses() {
+      const expenseList = document.getElementById("expenseList");
+      const emptyState = document.getElementById("emptyState");
+      const clearBtn = document.getElementById("clearBtn");
+
+      if (expenses.length === 0) {
+        expenseList.innerHTML = "";
+        emptyState.style.display = "block";
+        clearBtn.style.display = "none";
+        return;
+      }
+
+      emptyState.style.display = "none";
+      clearBtn.style.display = "block";
+      
+      // Re-attach the event listener after showing the button
+      clearBtn.onclick = clearAllExpenses;
+
+      expenseList.innerHTML = expenses.map(expense => `
+        <li class="expense-item" style="border-left-color: ${categoryColors[expense.category]}">
+          <div class="expense-info">
+            <div class="expense-name">${categoryEmojis[expense.category]} ${expense.name}</div>
+            <div class="expense-meta">${expense.date} • ${expense.category}</div>
+          </div>
+          <div class="expense-amount">₹${expense.amount.toFixed(2)}</div>
+          <button class="delete-btn" onclick="deleteExpense(${expense.id})">×</button>
+        </li>
+      `).join('');
+    }
+
+    function updateStats() {
+      document.getElementById("totalAmount").innerText = `₹${total.toFixed(2)}`;
+      document.getElementById("totalItems").innerText = expenses.length;
+    }
+
+    function clearInputs() {
+      document.getElementById("nameInput").value = "";
+      document.getElementById("amountInput").value = "";
+    }
+
+    // Allow Enter key to add expense
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        addExpense();
+      }
+    });
+
+    // Initialize
+    renderExpenses();
+    updateStats();
+  </script>
+
+</body>
+</html>
